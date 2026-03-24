@@ -2,6 +2,6 @@
   "recommendations": [
     "ms-vscode.vscode-typescript-next",
     "EditorConfig.EditorConfig",
-    "oxc.oxc-vscode",
-  ],
+    "oxc.oxc-vscode"
+  ]
 }
