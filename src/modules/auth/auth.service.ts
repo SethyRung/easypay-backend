@@ -40,7 +40,7 @@ export class AuthService {
 
       await db.insert(walletAccounts).values({
         userId: user.id,
-        currency: "INR",
+        currency: "USD",
         balanceMinor: 0,
         status: "active",
       });

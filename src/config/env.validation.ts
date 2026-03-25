@@ -17,6 +17,8 @@ const envSchema = z
     JWT_REFRESH_EXPIRATION: z.string().default("7d"),
 
     TRANSFER_FEE_MINOR: z.string().default("0"),
+    TOPUP_MAX_PER_TX_MINOR: z.string().default("100000"),
+    TOPUP_MAX_DAILY_MINOR: z.string().default("500000"),
 
     CORS_ORIGIN: z.string().default("*"),
   })

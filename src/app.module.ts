@@ -9,6 +9,7 @@ import { HttpExceptionFilter } from "@common/filters/http-exception.filter";
 import { JwtAuthGuard } from "@common/guards/jwt-auth.guard";
 import { validateEnv } from "@config/env.validation";
 import { AuthModule } from "@modules/auth/auth.module";
+import { WalletModule } from "@modules/wallet/wallet.module";
 
 @Module({
   imports: [
@@ -18,6 +19,7 @@ import { AuthModule } from "@modules/auth/auth.module";
     }),
     DrizzleModule,
     AuthModule,
+    WalletModule,
   ],
   controllers: [AppController],
   providers: [
