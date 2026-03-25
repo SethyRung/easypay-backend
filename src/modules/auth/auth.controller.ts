@@ -11,7 +11,7 @@ import {
 } from "./dto";
 import { Public } from "@common/decorators/public.decorator";
 import { CurrentUser, type CurrentUserData } from "@common/decorators/current-user.decorator";
-import { ApiTags, ApiOkResponse, ApiBody } from "@nestjs/swagger";
+import { ApiTags, ApiOkResponse, ApiBody, ApiBearerAuth } from "@nestjs/swagger";
 
 @ApiTags("auth")
 @Controller("auth")
@@ -46,6 +46,7 @@ export class AuthController {
   }
 
   @Post("logout")
+  @ApiBearerAuth()
   @ApiBody({ type: LogoutDto })
   @ApiOkResponse({ description: "Logout successful", type: LogoutResponseDto })
   async logout(
@@ -56,6 +57,7 @@ export class AuthController {
   }
 
   @Get("me")
+  @ApiBearerAuth()
   @ApiOkResponse({
     description: "User retrieved successfully",
     type: UserResponseDto,
