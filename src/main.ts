@@ -5,15 +5,16 @@ import { setupSwagger } from "./config/swagger.config";
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
-  const config = new ConfigService();
+  const config = app.get(ConfigService);
 
+  app.enableShutdownHooks();
   app.enableCors({
-    origin: config.get<string>("CORS_ORIGIN") || "*",
+    origin: config.get("CORS_ORIGIN"),
     credentials: true,
   });
 
   setupSwagger(app);
 
-  await app.listen(config.get<string>("PORT") ?? 8080);
+  await app.listen(config.get<number>("PORT")!);
 }
 bootstrap();

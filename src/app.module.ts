@@ -6,11 +6,13 @@ import { AppService } from "./app.service";
 import { DrizzleModule } from "./db/drizzle.module";
 import { ResponseInterceptor } from "./common/interceptors/response.interceptor";
 import { HttpExceptionFilter } from "./common/filters/http-exception.filter";
+import { validateEnv } from "./config/env.validation";
 
 @Module({
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
+      validate: validateEnv,
     }),
     DrizzleModule,
   ],

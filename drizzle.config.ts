@@ -8,10 +8,10 @@ export default {
   out: "./drizzle",
   dialect: "postgresql",
   dbCredentials: {
-    host: config.get<string>("DATABASE_HOST") || "localhost",
-    port: Number(config.get<string>("DATABASE_PORT")) || 5432,
-    user: config.get<string>("DATABASE_USER") || "easypay",
-    password: config.get<string>("DATABASE_PASSWORD") || "easypay",
-    database: config.get<string>("DATABASE_NAME") || "easypay",
+    host: config.get<string>("DATABASE_HOST")!,
+    port: Number(config.get<string>("DATABASE_PORT"))!,
+    user: config.get<string>("DATABASE_USER")!,
+    password: config.get<string>("DATABASE_PASSWORD")!,
+    database: config.get<string>("DATABASE_NAME")!,
   },
 } satisfies Config;
