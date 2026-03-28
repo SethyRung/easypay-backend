@@ -10,6 +10,7 @@ import { JwtAuthGuard } from "@common/guards/jwt-auth.guard";
 import { validateEnv } from "@config/env.validation";
 import { AuthModule } from "@modules/auth/auth.module";
 import { WalletModule } from "@modules/wallet/wallet.module";
+import { TransfersModule } from "@modules/transfers/transfers.module";
 
 @Module({
   imports: [
@@ -20,6 +21,7 @@ import { WalletModule } from "@modules/wallet/wallet.module";
     DrizzleModule,
     AuthModule,
     WalletModule,
+    TransfersModule,
   ],
   controllers: [AppController],
   providers: [
