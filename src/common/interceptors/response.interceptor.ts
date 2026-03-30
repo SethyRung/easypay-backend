@@ -12,7 +12,14 @@ export class ResponseInterceptor<T> implements NestInterceptor<T, any> {
 
     return next.handle().pipe(
       map((data) => {
-        if (data && typeof data === "object" && "status" in data && "requestId" in data.status) {
+        if (
+          data &&
+          typeof data === "object" &&
+          "status" in data &&
+          typeof data.status === "object" &&
+          data.status !== null &&
+          "requestId" in data.status
+        ) {
           return data;
         }
 

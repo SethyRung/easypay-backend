@@ -105,14 +105,13 @@ export class TransfersService {
           : `Transfer to ${dto.recipientPhone}`,
       });
 
-      const senderFeeBalanceAfter = senderDebitBalanceAfter;
       await db.insert(ledgerEntries).values({
         walletAccountId: senderWallet.id,
         transferId: transfer.id,
         entryType: "debit",
         amountMinor: this.feeMinor,
         balanceBeforeMinor: senderDebitBalanceAfter + this.feeMinor,
-        balanceAfterMinor: senderFeeBalanceAfter,
+        balanceAfterMinor: senderDebitBalanceAfter,
         description: "Transfer fee",
       });
 
@@ -129,7 +128,7 @@ export class TransfersService {
 
       await db
         .update(walletAccounts)
-        .set({ balanceMinor: senderFeeBalanceAfter, updatedAt: new Date() })
+        .set({ balanceMinor: senderDebitBalanceAfter, updatedAt: new Date() })
         .where(eq(walletAccounts.id, senderWallet.id));
 
       await db
@@ -140,7 +139,7 @@ export class TransfersService {
       return this.mapToReceipt({
         ...transfer,
         senderBalanceBeforeMinor: senderWallet.balanceMinor,
-        senderBalanceAfterMinor: senderFeeBalanceAfter,
+        senderBalanceAfterMinor: senderDebitBalanceAfter,
         recipientBalanceBeforeMinor: recipientWallet.balanceMinor,
         recipientBalanceAfterMinor: recipientCreditBalanceAfter,
       });
@@ -153,13 +152,18 @@ export class TransfersService {
       throw new NotFoundException("Transfer not found");
     }
 
+    // Get ledger entries to find balances
     const senderDebitEntries = await this.databaseService
       .getClient()
       .select()
       .from(ledgerEntries)
       .where(eq(ledgerEntries.transferId, transferId));
 
-    const senderDebit = senderDebitEntries.find((e) => e.entryType === "debit");
+    // Find the main debit entry (not the fee entry) by selecting the largest amount
+    const senderDebit = senderDebitEntries
+      .filter((e) => e.entryType === "debit")
+      .sort((a, b) => b.amountMinor - a.amountMinor)[0];
+
     const recipientCredit = senderDebitEntries.find((e) => e.entryType === "credit");
 
     return this.mapToReceipt({
