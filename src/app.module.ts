@@ -11,6 +11,7 @@ import { validateEnv } from "@config/env.validation";
 import { AuthModule } from "@modules/auth/auth.module";
 import { WalletModule } from "@modules/wallet/wallet.module";
 import { TransfersModule } from "@modules/transfers/transfers.module";
+import { PaymentsModule } from "@modules/payments/payments.module";
 
 @Module({
   imports: [
@@ -22,6 +23,7 @@ import { TransfersModule } from "@modules/transfers/transfers.module";
     AuthModule,
     WalletModule,
     TransfersModule,
+    PaymentsModule,
   ],
   controllers: [AppController],
   providers: [

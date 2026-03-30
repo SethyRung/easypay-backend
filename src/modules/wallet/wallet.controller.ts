@@ -9,6 +9,8 @@ import {
   TransactionsResponseDto,
   TopUpWalletDto,
   TopUpResponseDto,
+  WithdrawWalletDto,
+  WithdrawResponseDto,
 } from "./dto";
 
 @ApiTags("wallet")
@@ -42,5 +44,16 @@ export class WalletController {
     @Body() dto: TopUpWalletDto,
   ): Promise<TopUpResponseDto> {
     return this.walletService.topUpWallet(user.userId, dto);
+  }
+
+  @Post("withdraw")
+  @ApiBearerAuth()
+  @ApiBody({ type: WithdrawWalletDto })
+  @ApiOkResponseWrapper(WithdrawResponseDto)
+  async withdrawWallet(
+    @CurrentUser() user: CurrentUserData,
+    @Body() dto: WithdrawWalletDto,
+  ): Promise<WithdrawResponseDto> {
+    return this.walletService.withdrawWallet(user.userId, dto);
   }
 }

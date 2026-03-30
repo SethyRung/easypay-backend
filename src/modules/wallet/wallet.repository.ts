@@ -108,4 +108,51 @@ export class WalletRepository {
       return { wallet: updatedWallet, entry, balanceBeforeMinor };
     });
   }
+
+  async withdrawWallet(userId: string, amountMinor: number, note?: string) {
+    return this.databaseService.transaction(async (db) => {
+      const walletResult = await db
+        .select()
+        .from(walletAccounts)
+        .where(eq(walletAccounts.userId, userId))
+        .for("update")
+        .limit(1);
+      const wallet = walletResult[0];
+
+      if (!wallet) {
+        return null;
+      }
+
+      if (wallet.balanceMinor < amountMinor) {
+        throw new BadRequestException("Insufficient balance");
+      }
+
+      const balanceBeforeMinor = wallet.balanceMinor;
+      const balanceAfterMinor = wallet.balanceMinor - amountMinor;
+
+      await db
+        .update(walletAccounts)
+        .set({ balanceMinor: balanceAfterMinor, updatedAt: new Date() })
+        .where(eq(walletAccounts.id, wallet.id));
+
+      const entryResult = await db
+        .insert(ledgerEntries)
+        .values({
+          walletAccountId: wallet.id,
+          entryType: "debit",
+          amountMinor,
+          balanceBeforeMinor,
+          balanceAfterMinor,
+          description: note ? `Wallet withdrawal: ${note}` : "Wallet withdrawal",
+        })
+        .returning();
+      const entry = entryResult[0];
+
+      return {
+        wallet: { id: wallet.id, currency: wallet.currency, balanceMinor: balanceAfterMinor },
+        entry,
+        balanceBeforeMinor,
+      };
+    });
+  }
 }

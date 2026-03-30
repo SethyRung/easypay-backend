@@ -104,4 +104,38 @@ export class WalletService {
       createdAt: result.entry.createdAt,
     };
   }
+
+  async withdrawWallet(userId: string, dto: any): Promise<any> {
+    if (typeof dto.amount !== "number" || !Number.isFinite(dto.amount) || dto.amount <= 0) {
+      throw new BadRequestException("amount must be a positive number");
+    }
+
+    const amountMinor = Math.round(dto.amount * 100);
+    if (amountMinor <= 0) {
+      throw new BadRequestException("amount must be at least 0.01");
+    }
+
+    if (amountMinor > this.topUpMaxPerTxMinor) {
+      throw new BadRequestException(
+        `Withdrawal exceeds per transaction limit of ${this.topUpMaxPerTxMinor} minor units`,
+      );
+    }
+
+    const result = await this.walletRepository.withdrawWallet(userId, amountMinor, dto.note);
+
+    if (!result) {
+      throw new NotFoundException("Wallet not found");
+    }
+
+    return {
+      walletId: result.wallet.id,
+      currency: result.wallet.currency,
+      amountMinor,
+      amount: amountMinor / 100,
+      balanceBeforeMinor: result.balanceBeforeMinor,
+      balanceAfterMinor: result.wallet.balanceMinor,
+      transactionId: result.entry.id,
+      createdAt: result.entry.createdAt,
+    };
+  }
 }
