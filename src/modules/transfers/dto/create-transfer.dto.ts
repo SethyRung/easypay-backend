@@ -8,7 +8,7 @@ export class CreateTransferDto {
   recipientPhone: string;
 
   @ApiProperty({
-    example: 130.00,
+    example: 130.0,
     description: "Amount to transfer in major units (e.g., dollars)",
   })
   @IsNumber()

@@ -11,7 +11,8 @@ import {
 } from "./dto";
 import { Public } from "@common/decorators/public.decorator";
 import { CurrentUser, type CurrentUserData } from "@common/decorators/current-user.decorator";
-import { ApiTags, ApiOkResponse, ApiBody, ApiBearerAuth } from "@nestjs/swagger";
+import { ApiOkResponseWrapper } from "@common/decorators/api-response.decorator";
+import { ApiTags, ApiBody, ApiBearerAuth } from "@nestjs/swagger";
 
 @ApiTags("auth")
 @Controller("auth")
@@ -21,7 +22,7 @@ export class AuthController {
   @Public()
   @Post("register")
   @ApiBody({ type: RegisterDto })
-  @ApiOkResponse({ description: "User registered successfully", type: AuthResponseDto })
+  @ApiOkResponseWrapper(AuthResponseDto)
   async register(@Body() dto: RegisterDto): Promise<AuthResponseDto> {
     return this.authService.register(dto);
   }
@@ -29,7 +30,7 @@ export class AuthController {
   @Public()
   @Post("login")
   @ApiBody({ type: LoginDto })
-  @ApiOkResponse({ description: "Login successful", type: AuthResponseDto })
+  @ApiOkResponseWrapper(AuthResponseDto)
   async login(@Body() dto: LoginDto): Promise<AuthResponseDto> {
     return this.authService.login(dto);
   }
@@ -37,10 +38,7 @@ export class AuthController {
   @Public()
   @Post("refresh")
   @ApiBody({ type: RefreshDto })
-  @ApiOkResponse({
-    description: "Token refreshed successfully",
-    type: AuthResponseDto,
-  })
+  @ApiOkResponseWrapper(AuthResponseDto)
   async refreshToken(@Body() dto: RefreshDto): Promise<AuthResponseDto> {
     return this.authService.refreshToken(dto);
   }
@@ -48,7 +46,7 @@ export class AuthController {
   @Post("logout")
   @ApiBearerAuth()
   @ApiBody({ type: LogoutDto })
-  @ApiOkResponse({ description: "Logout successful", type: LogoutResponseDto })
+  @ApiOkResponseWrapper(LogoutResponseDto)
   async logout(
     @CurrentUser() user: CurrentUserData,
     @Body() dto: LogoutDto,
@@ -58,10 +56,7 @@ export class AuthController {
 
   @Get("me")
   @ApiBearerAuth()
-  @ApiOkResponse({
-    description: "User retrieved successfully",
-    type: UserResponseDto,
-  })
+  @ApiOkResponseWrapper(UserResponseDto)
   async getMe(@CurrentUser() user: CurrentUserData): Promise<UserResponseDto> {
     return this.authService.getMe(user.userId);
   }

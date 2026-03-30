@@ -1,7 +1,8 @@
 import { Controller, Post, Get, Body, Param } from "@nestjs/common";
 import { TransfersService } from "./transfers.service";
 import { CurrentUser, type CurrentUserData } from "@common/decorators/current-user.decorator";
-import { ApiTags, ApiOkResponse, ApiBearerAuth, ApiBody } from "@nestjs/swagger";
+import { ApiOkResponseWrapper } from "@common/decorators/api-response.decorator";
+import { ApiTags, ApiBearerAuth, ApiBody } from "@nestjs/swagger";
 import { CreateTransferDto, TransferReceiptDto } from "./dto";
 
 @ApiTags("transfers")
@@ -12,7 +13,7 @@ export class TransfersController {
   @Post()
   @ApiBearerAuth()
   @ApiBody({ type: CreateTransferDto })
-  @ApiOkResponse({ description: "Transfer created successfully", type: TransferReceiptDto })
+  @ApiOkResponseWrapper(TransferReceiptDto)
   async createTransfer(
     @CurrentUser() user: CurrentUserData,
     @Body() dto: CreateTransferDto,
@@ -22,7 +23,7 @@ export class TransfersController {
 
   @Get(":id")
   @ApiBearerAuth()
-  @ApiOkResponse({ description: "Transfer retrieved successfully", type: TransferReceiptDto })
+  @ApiOkResponseWrapper(TransferReceiptDto)
   async getTransfer(@Param("id") id: string): Promise<TransferReceiptDto> {
     return this.transfersService.getTransfer(id);
   }

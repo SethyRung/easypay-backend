@@ -1,7 +1,8 @@
 import { Controller, Get, Query, Post, Body } from "@nestjs/common";
 import { WalletService } from "./wallet.service";
 import { CurrentUser, type CurrentUserData } from "@common/decorators/current-user.decorator";
-import { ApiTags, ApiOkResponse, ApiBearerAuth, ApiBody } from "@nestjs/swagger";
+import { ApiOkResponseWrapper } from "@common/decorators/api-response.decorator";
+import { ApiTags, ApiBearerAuth, ApiBody } from "@nestjs/swagger";
 import {
   TransactionsQueryDto,
   BalanceResponseDto,
@@ -17,17 +18,14 @@ export class WalletController {
 
   @Get("balance")
   @ApiBearerAuth()
-  @ApiOkResponse({ description: "Balance retrieved successfully", type: BalanceResponseDto })
+  @ApiOkResponseWrapper(BalanceResponseDto)
   async getBalance(@CurrentUser() user: CurrentUserData): Promise<BalanceResponseDto> {
     return this.walletService.getBalance(user.userId);
   }
 
   @Get("transactions")
   @ApiBearerAuth()
-  @ApiOkResponse({
-    description: "Transactions retrieved successfully",
-    type: TransactionsResponseDto,
-  })
+  @ApiOkResponseWrapper(TransactionsResponseDto)
   async getTransactions(
     @CurrentUser() user: CurrentUserData,
     @Query() query: TransactionsQueryDto,
@@ -38,7 +36,7 @@ export class WalletController {
   @Post("topup")
   @ApiBearerAuth()
   @ApiBody({ type: TopUpWalletDto })
-  @ApiOkResponse({ description: "Wallet topped up successfully", type: TopUpResponseDto })
+  @ApiOkResponseWrapper(TopUpResponseDto)
   async topUpWallet(
     @CurrentUser() user: CurrentUserData,
     @Body() dto: TopUpWalletDto,
