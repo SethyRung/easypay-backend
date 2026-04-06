@@ -15,7 +15,7 @@ import { ApiOkResponseWrapper } from "@/common/decorators/api-response.decorator
 import { ApiTags, ApiBody, ApiBearerAuth } from "@nestjs/swagger";
 
 @ApiTags("auth")
-@Controller("auth")
+@Controller("api/auth")
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 

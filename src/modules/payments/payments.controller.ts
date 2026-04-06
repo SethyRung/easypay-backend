@@ -6,7 +6,7 @@ import { CurrentUser, type CurrentUserData } from "@/common/decorators/current-u
 import { ApiOkResponseWrapper } from "@/common/decorators/api-response.decorator";
 
 @ApiTags("payments")
-@Controller("payments")
+@Controller("api/payments")
 export class PaymentsController {
   constructor(private readonly paymentsService: PaymentsService) {}
 

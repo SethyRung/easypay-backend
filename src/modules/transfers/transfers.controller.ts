@@ -6,7 +6,7 @@ import { ApiTags, ApiBearerAuth, ApiBody } from "@nestjs/swagger";
 import { CreateTransferDto, TransferReceiptDto } from "./dto";
 
 @ApiTags("transfers")
-@Controller("transfers")
+@Controller("api/transfers")
 export class TransfersController {
   constructor(private readonly transfersService: TransfersService) {}
 
