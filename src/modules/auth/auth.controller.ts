@@ -9,9 +9,9 @@ import {
   UserResponseDto,
   LogoutResponseDto,
 } from "./dto";
-import { Public } from "@common/decorators/public.decorator";
-import { CurrentUser, type CurrentUserData } from "@common/decorators/current-user.decorator";
-import { ApiOkResponseWrapper } from "@common/decorators/api-response.decorator";
+import { Public } from "@/common/decorators/public.decorator";
+import { CurrentUser, type CurrentUserData } from "@/common/decorators/current-user.decorator";
+import { ApiOkResponseWrapper } from "@/common/decorators/api-response.decorator";
 import { ApiTags, ApiBody, ApiBearerAuth } from "@nestjs/swagger";
 
 @ApiTags("auth")

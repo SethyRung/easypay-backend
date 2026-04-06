@@ -1,7 +1,7 @@
 import { Controller, Post, Get, Body, Param } from "@nestjs/common";
 import { TransfersService } from "./transfers.service";
-import { CurrentUser, type CurrentUserData } from "@common/decorators/current-user.decorator";
-import { ApiOkResponseWrapper } from "@common/decorators/api-response.decorator";
+import { CurrentUser, type CurrentUserData } from "@/common/decorators/current-user.decorator";
+import { ApiOkResponseWrapper } from "@/common/decorators/api-response.decorator";
 import { ApiTags, ApiBearerAuth, ApiBody } from "@nestjs/swagger";
 import { CreateTransferDto, TransferReceiptDto } from "./dto";
 

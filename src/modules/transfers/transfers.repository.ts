@@ -1,6 +1,6 @@
 import { Injectable, Inject } from "@nestjs/common";
 import { PostgresJsDatabase } from "drizzle-orm/postgres-js";
-import { transfers, users, walletAccounts } from "@db/schema";
+import { transfers, users, walletAccounts } from "@/db/schema";
 import { eq, and } from "drizzle-orm";
 
 @Injectable()

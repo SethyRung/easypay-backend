@@ -1,5 +1,5 @@
 import { Injectable, NotFoundException } from "@nestjs/common";
-import { WalletService } from "@modules/wallet/wallet.service";
+import { WalletService } from "@/modules/wallet/wallet.service";
 import { BillPaymentDto } from "./dto/bill-payment.dto";
 
 @Injectable()

@@ -1,6 +1,6 @@
 import { Injectable, Inject } from "@nestjs/common";
 import { PostgresJsDatabase } from "drizzle-orm/postgres-js";
-import { users, refreshTokens } from "@db/schema";
+import { users, refreshTokens } from "@/db/schema";
 import { eq, and, isNull } from "drizzle-orm";
 
 @Injectable()

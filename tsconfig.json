@@ -1,4 +1,5 @@
 {
+  "include": ["src/**/*"],
   "compilerOptions": {
     "module": "nodenext",
     "moduleResolution": "nodenext",
@@ -10,16 +11,12 @@
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
     "allowSyntheticDefaultImports": true,
-    "target": "ES2023",
+    "target": "ES2024",
     "sourceMap": true,
+    "rootDir": "./",
     "outDir": "./dist",
-    "baseUrl": "./",
     "paths": {
-      "@/*": ["src/*"],
-      "@common/*": ["src/common/*"],
-      "@config/*": ["src/config/*"],
-      "@db/*": ["src/db/*"],
-      "@modules/*": ["src/modules/*"]
+      "@/*": ["./src/*"]
     },
     "incremental": true,
     "skipLibCheck": true,

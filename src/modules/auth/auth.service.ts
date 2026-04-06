@@ -4,9 +4,9 @@ import { JwtService } from "@nestjs/jwt";
 import * as bcrypt from "bcrypt";
 import { AuthRepository } from "./auth.repository";
 import { RegisterDto, LoginDto, RefreshDto } from "./dto";
-import { DatabaseService } from "@db/database.service";
-import { walletAccounts } from "@db/schema";
-import type { RefreshToken } from "@db/schema/refresh-tokens";
+import { DatabaseService } from "@/db/database.service";
+import { walletAccounts } from "@/db/schema";
+import type { RefreshToken } from "@/db/schema/refresh-tokens";
 
 @Injectable()
 export class AuthService {

@@ -1,8 +1,8 @@
 import { Injectable, NotFoundException, BadRequestException } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
-import { DatabaseService } from "@db/database.service";
+import { DatabaseService } from "@/db/database.service";
 import { TransfersRepository } from "./transfers.repository";
-import { transfers, ledgerEntries, walletAccounts } from "@db/schema";
+import { transfers, ledgerEntries, walletAccounts } from "@/db/schema";
 import { eq } from "drizzle-orm";
 import { CreateTransferDto, TransferReceiptDto } from "./dto";
 

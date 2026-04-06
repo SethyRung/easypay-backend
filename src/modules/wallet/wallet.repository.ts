@@ -1,8 +1,8 @@
 import { Injectable, Inject, BadRequestException } from "@nestjs/common";
 import { PostgresJsDatabase } from "drizzle-orm/postgres-js";
-import { walletAccounts, ledgerEntries } from "@db/schema";
+import { walletAccounts, ledgerEntries } from "@/db/schema";
 import { eq, desc, sql, and, gte, like } from "drizzle-orm";
-import { DatabaseService } from "@db/database.service";
+import { DatabaseService } from "@/db/database.service";
 
 @Injectable()
 export class WalletRepository {

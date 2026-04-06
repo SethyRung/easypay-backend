@@ -1,7 +1,7 @@
 import { Controller, Get, Query, Post, Body } from "@nestjs/common";
 import { WalletService } from "./wallet.service";
-import { CurrentUser, type CurrentUserData } from "@common/decorators/current-user.decorator";
-import { ApiOkResponseWrapper } from "@common/decorators/api-response.decorator";
+import { CurrentUser, type CurrentUserData } from "@/common/decorators/current-user.decorator";
+import { ApiOkResponseWrapper } from "@/common/decorators/api-response.decorator";
 import { ApiTags, ApiBearerAuth, ApiBody } from "@nestjs/swagger";
 import {
   TransactionsQueryDto,
