@@ -16,7 +16,7 @@ services:
     networks:
       - easypay-network
 
-  app:
+  backend:
     build:
       context: .
       dockerfile: Dockerfile
