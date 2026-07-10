@@ -28,7 +28,7 @@ export class AuthService {
       throw new ConflictException("User with this phone number already exists");
     }
 
-    const passwordHash = await bcrypt.hash(dto.password, 10);
+    const passwordHash = await bcrypt.hash(dto.password, 12);
 
     const result = await this.databaseService.transaction(async (db) => {
       const user = await this.authRepository.createUser({
@@ -50,7 +50,7 @@ export class AuthService {
 
     const { accessToken, refreshToken } = await this.generateTokens(result.id, result.email);
 
-    const refreshTokenHash = await bcrypt.hash(refreshToken, 10);
+    const refreshTokenHash = await bcrypt.hash(refreshToken, 12);
     const expiresAt = new Date();
     expiresAt.setDate(expiresAt.getDate() + 7);
 
@@ -86,7 +86,7 @@ export class AuthService {
 
     const { accessToken, refreshToken } = await this.generateTokens(user.id, user.email);
 
-    const refreshTokenHash = await bcrypt.hash(refreshToken, 10);
+    const refreshTokenHash = await bcrypt.hash(refreshToken, 12);
     const expiresAt = new Date();
     expiresAt.setDate(expiresAt.getDate() + 7);
 
@@ -147,7 +147,7 @@ export class AuthService {
 
     const { accessToken, refreshToken } = await this.generateTokens(user.id, user.email);
 
-    const newRefreshTokenHash = await bcrypt.hash(refreshToken, 10);
+    const newRefreshTokenHash = await bcrypt.hash(refreshToken, 12);
     const expiresAt = new Date();
     expiresAt.setDate(expiresAt.getDate() + 7);
 

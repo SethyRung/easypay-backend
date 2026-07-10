@@ -11,12 +11,15 @@ const envSchema = z
     DATABASE_PASSWORD: z.string().default("easypay"),
     DATABASE_NAME: z.string().default("easypay"),
 
-    JWT_ACCESS_SECRET: z.string().default("acceess-secret"),
+    // JWT secrets MUST be set explicitly. Do not rely on defaults in any environment.
+    // Generate strong random values for production, e.g. `openssl rand -base64 48`.
+    JWT_ACCESS_SECRET: z.string().min(1),
     JWT_ACCESS_EXPIRATION: z.string().default("15m"),
-    JWT_REFRESH_SECRET: z.string().default("refresh-secret"),
+    JWT_REFRESH_SECRET: z.string().min(1),
     JWT_REFRESH_EXPIRATION: z.string().default("7d"),
 
-    TRANSFER_FEE_MINOR: z.string().default("0"),
+    // Flat per-transfer fee in minor units (e.g. 200 = ₹2). Set to "0" to disable.
+    TRANSFER_FEE_MINOR: z.string().default("200"),
     TOPUP_MAX_PER_TX_MINOR: z.string().default("100000"),
     TOPUP_MAX_DAILY_MINOR: z.string().default("500000"),
 
