@@ -104,11 +104,12 @@ interface ApiResponse<T> {
   status: {
     code: ApiResponseCode;
     message: string;
-    requestId: string;   // auto-generated UUID per request
+    requestId: string; // auto-generated UUID per request
     requestTime: number; // epoch ms
   };
   data: T;
-  meta?: {              // present ONLY for paginated responses
+  meta?: {
+    // present ONLY for paginated responses
     total: number;
     limit: number;
     offset: number;
@@ -131,13 +132,13 @@ A global NestJS interceptor injects `requestId` (UUID) and `requestTime` (epoch 
 
 ## Data Model
 
-| Table             | Key fields                                                                  |
-| ----------------- | --------------------------------------------------------------------------- |
-| `users`           | `id`, `email`, `phone`, `password_hash`                                     |
-| `wallet_accounts` | `id`, `user_id`, `balance_minor`, `status`                                  |
-| `transfers`       | `id`, `sender_user_id`, `recipient_user_id`, `amount_minor`, `fee_minor`, `idempotency_key` |
+| Table             | Key fields                                                                                             |
+| ----------------- | ------------------------------------------------------------------------------------------------------ |
+| `users`           | `id`, `email`, `phone`, `password_hash`                                                                |
+| `wallet_accounts` | `id`, `user_id`, `balance_minor`, `status`                                                             |
+| `transfers`       | `id`, `sender_user_id`, `recipient_user_id`, `amount_minor`, `fee_minor`, `idempotency_key`            |
 | `ledger_entries`  | `id`, `wallet_account_id`, `entry_type`, `amount_minor`, `balance_before_minor`, `balance_after_minor` |
-| `refresh_tokens`  | `id`, `user_id`, `token_hash`, `expires_at`                                 |
+| `refresh_tokens`  | `id`, `user_id`, `token_hash`, `expires_at`                                                            |
 
 See `src/db/schema/` for the canonical Drizzle definitions and `ANDROID_BACKEND_PLAN.md` for the full spec.
 
