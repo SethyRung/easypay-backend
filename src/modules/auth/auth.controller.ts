@@ -8,16 +8,21 @@ import {
   AuthResponseDto,
   UserResponseDto,
   LogoutResponseDto,
+  BridgeIssueResponseDto,
 } from "./dto";
 import { Public } from "@/common/decorators/public.decorator";
 import { CurrentUser, type CurrentUserData } from "@/common/decorators/current-user.decorator";
 import { ApiOkResponseWrapper } from "@/common/decorators/api-response.decorator";
 import { ApiTags, ApiBody, ApiBearerAuth } from "@nestjs/swagger";
+import { BridgeIssueService } from "./bridge-issue";
 
 @ApiTags("auth")
 @Controller("api/auth")
 export class AuthController {
-  constructor(private readonly authService: AuthService) {}
+  constructor(
+    private readonly authService: AuthService,
+    private readonly bridgeIssueService: BridgeIssueService,
+  ) {}
 
   @Public()
   @Post("register")
@@ -59,5 +64,19 @@ export class AuthController {
   @ApiOkResponseWrapper(UserResponseDto)
   async getMe(@CurrentUser() user: CurrentUserData): Promise<UserResponseDto> {
     return this.authService.getMe(user.userId);
+  }
+
+  /**
+   * Bridge auth — exchange the mobile's verified JWT for a glitch
+   * session cookie. Stateless forwarder; see BRIDGE_AUTH.md.
+   *
+   * Protected by the global JwtAuthGuard. Only authenticated mobile
+   * sessions can call this.
+   */
+  @Post("bridge-issue")
+  @ApiBearerAuth()
+  @ApiOkResponseWrapper(BridgeIssueResponseDto)
+  async bridgeIssue(@CurrentUser() user: CurrentUserData): Promise<BridgeIssueResponseDto> {
+    return this.bridgeIssueService.issue(user);
   }
 }
