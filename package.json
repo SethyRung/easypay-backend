@@ -3,7 +3,6 @@
   "version": "0.0.1",
   "private": true,
   "license": "MIT",
-  "type": "module",
   "scripts": {
     "build": "nest build",
     "start": "nest start",
@@ -85,7 +84,12 @@
     "testEnvironment": "node",
     "testRegex": ".*\\.spec\\.ts$",
     "transform": {
-      "^.+\\.(t|j)s$": "ts-jest"
+      "^.+\\.(t|j)s$": [
+        "ts-jest",
+        {
+          "useESM": false
+        }
+      ]
     }
   },
   "packageManager": "pnpm@10.32.1"
