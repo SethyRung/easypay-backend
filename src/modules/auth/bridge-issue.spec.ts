@@ -100,7 +100,14 @@ describe("BridgeIssueService", () => {
           break;
         }
         case "throw": {
-          httpPost.mockReturnValue(throwError(() => opts.httpResponse!.error));
+          // Narrow through a local const — TS doesn't always carry
+          // discriminated-union narrowing across the double access.
+          const throwResp = opts.httpResponse;
+          httpPost.mockReturnValue(
+            throwError(() =>
+              throwResp.kind === "throw" ? throwResp.error : new Error("unreachable"),
+            ),
+          );
           break;
         }
       }
