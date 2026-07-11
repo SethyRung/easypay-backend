@@ -22,7 +22,7 @@ import { validateEnv } from "@/config/env.validation";
  *   - glitch 5xx → 503
  *   - network error → 503
  *   - missing user in DB → 404
- *   - missing NUXT_BRIDGE_SHARED_SECRET at startup → fail-fast
+ *   - missing BRIDGE_SHARED_SECRET at startup → fail-fast
  */
 describe("BridgeIssueService", () => {
   const userId = "11111111-1111-1111-1111-111111111111";
@@ -113,7 +113,7 @@ describe("BridgeIssueService", () => {
           ignoreEnvFile: true,
           load: [
             () => ({
-              NUXT_BRIDGE_SHARED_SECRET: sharedSecret,
+              BRIDGE_SHARED_SECRET: sharedSecret,
               GLITCH_BASE_URL: glitchBaseUrl,
             }),
           ],
@@ -182,7 +182,7 @@ describe("BridgeIssueService", () => {
           ignoreEnvFile: true,
           load: [
             () => ({
-              NUXT_BRIDGE_SHARED_SECRET: sharedSecret,
+              BRIDGE_SHARED_SECRET: sharedSecret,
               GLITCH_BASE_URL: glitchBaseUrl,
             }),
           ],
@@ -284,7 +284,7 @@ describe("env.validation — bridge secrets", () => {
     errSpy.mockRestore();
   });
 
-  it("rejects when NUXT_BRIDGE_SHARED_SECRET is missing or too short", () => {
+  it("rejects when BRIDGE_SHARED_SECRET is missing or too short", () => {
     expect(() => validateEnv({ ...baseValid, GLITCH_BASE_URL: "http://glitch.test" })).toThrow(
       "Invalid environment variables",
     );
@@ -292,21 +292,21 @@ describe("env.validation — bridge secrets", () => {
     expect(() =>
       validateEnv({
         ...baseValid,
-        NUXT_BRIDGE_SHARED_SECRET: "short",
+        BRIDGE_SHARED_SECRET: "short",
         GLITCH_BASE_URL: "http://glitch.test",
       }),
     ).toThrow("Invalid environment variables");
   });
 
   it("rejects when GLITCH_BASE_URL is missing or not a URL", () => {
-    expect(() => validateEnv({ ...baseValid, NUXT_BRIDGE_SHARED_SECRET: "x".repeat(48) })).toThrow(
+    expect(() => validateEnv({ ...baseValid, BRIDGE_SHARED_SECRET: "x".repeat(48) })).toThrow(
       "Invalid environment variables",
     );
 
     expect(() =>
       validateEnv({
         ...baseValid,
-        NUXT_BRIDGE_SHARED_SECRET: "x".repeat(48),
+        BRIDGE_SHARED_SECRET: "x".repeat(48),
         GLITCH_BASE_URL: "not-a-url",
       }),
     ).toThrow("Invalid environment variables");
@@ -315,10 +315,10 @@ describe("env.validation — bridge secrets", () => {
   it("accepts a valid config", () => {
     const env = validateEnv({
       ...baseValid,
-      NUXT_BRIDGE_SHARED_SECRET: "x".repeat(48),
+      BRIDGE_SHARED_SECRET: "x".repeat(48),
       GLITCH_BASE_URL: "http://glitch.test",
     });
-    expect(env.NUXT_BRIDGE_SHARED_SECRET).toHaveLength(48);
+    expect(env.BRIDGE_SHARED_SECRET).toHaveLength(48);
     expect(env.GLITCH_BASE_URL).toBe("http://glitch.test");
   });
 });

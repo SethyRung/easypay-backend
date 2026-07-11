@@ -26,7 +26,7 @@ const envSchema = z
     // Bridge to glitch B2B federation (see BRIDGE_AUTH.md).
     // Shared HMAC salt: 32+ random chars. Same value must be set on the glitch side.
     //   openssl rand -base64 48
-    NUXT_BRIDGE_SHARED_SECRET: z.string().min(32),
+    BRIDGE_SHARED_SECRET: z.string().min(32),
     // Base URL of the glitch instance that receives bridge-issue requests.
     GLITCH_BASE_URL: z.string().url(),
 

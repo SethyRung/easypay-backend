@@ -62,7 +62,7 @@ export class BridgeIssueService {
   // --- internals ------------------------------------------------------------
 
   /**
-   * Per BRIDGE_AUTH.md (verbatim): `sha256(userId + email + NUXT_BRIDGE_SHARED_SECRET)`.
+   * Per BRIDGE_AUTH.md (verbatim): `sha256(userId + email + BRIDGE_SHARED_SECRET)`.
    * No separator — both sides must use the same concatenation.
    *
    * NOTE: this is fragile to collisions if userId/email can be substrings
@@ -70,7 +70,7 @@ export class BridgeIssueService {
    * coordination.
    */
   private computeHash(userId: string, email: string): string {
-    const secret = this.configService.get<string>("NUXT_BRIDGE_SHARED_SECRET");
+    const secret = this.configService.get<string>("BRIDGE_SHARED_SECRET");
     // Non-null assertion: env.validation.ts requires this var at boot.
     return createHash("sha256")
       .update(userId + email + secret)
