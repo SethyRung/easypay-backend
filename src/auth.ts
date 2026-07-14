@@ -1,5 +1,6 @@
 import { betterAuth } from "better-auth";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
+import { bearer } from "better-auth/plugins";
 import * as bcrypt from "bcrypt";
 import { db } from "@/db";
 
@@ -62,7 +63,7 @@ export const auth = betterAuth({
     additionalFields: {
       phone: {
         type: "string",
-        required: false,
+        required: true,
         input: true,
       },
     },
@@ -90,6 +91,8 @@ export const auth = betterAuth({
       .map((s) => s.trim())
       .filter(Boolean);
   })(),
+
+  plugins: [bearer()],
 });
 
 export type Session = typeof auth.$Infer.Session;
