@@ -2,7 +2,7 @@ import { Controller, Post, Body } from "@nestjs/common";
 import { ApiTags, ApiBearerAuth, ApiBody } from "@nestjs/swagger";
 import { PaymentsService } from "./payments.service";
 import { BillPaymentDto } from "./dto/bill-payment.dto";
-import { CurrentUser, type CurrentUserData } from "@/common/decorators/current-user.decorator";
+import { Session, type UserSession } from "@thallesp/nestjs-better-auth";
 import { ApiOkResponseWrapper } from "@/common/decorators/api-response.decorator";
 
 @ApiTags("payments")
@@ -14,7 +14,7 @@ export class PaymentsController {
   @ApiBearerAuth()
   @ApiBody({ type: BillPaymentDto })
   @ApiOkResponseWrapper(Object)
-  async payBill(@CurrentUser() user: CurrentUserData, @Body() dto: BillPaymentDto) {
-    return this.paymentsService.payBill(user.userId, dto);
+  async payBill(@Session() session: UserSession, @Body() dto: BillPaymentDto) {
+    return this.paymentsService.payBill(session.user.id, dto);
   }
 }

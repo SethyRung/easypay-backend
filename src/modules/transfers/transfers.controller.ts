@@ -1,6 +1,6 @@
 import { Controller, Post, Get, Body, Param } from "@nestjs/common";
 import { TransfersService } from "./transfers.service";
-import { CurrentUser, type CurrentUserData } from "@/common/decorators/current-user.decorator";
+import { Session, type UserSession } from "@thallesp/nestjs-better-auth";
 import { ApiOkResponseWrapper } from "@/common/decorators/api-response.decorator";
 import { ApiTags, ApiBearerAuth, ApiBody } from "@nestjs/swagger";
 import { CreateTransferDto, TransferReceiptDto } from "./dto";
@@ -15,10 +15,10 @@ export class TransfersController {
   @ApiBody({ type: CreateTransferDto })
   @ApiOkResponseWrapper(TransferReceiptDto)
   async createTransfer(
-    @CurrentUser() user: CurrentUserData,
+    @Session() session: UserSession,
     @Body() dto: CreateTransferDto,
   ): Promise<TransferReceiptDto> {
-    return this.transfersService.createTransfer(user.userId, dto);
+    return this.transfersService.createTransfer(session.user.id, dto);
   }
 
   @Get(":id")

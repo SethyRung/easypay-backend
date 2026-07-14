@@ -1,6 +1,6 @@
 import { Controller, Get, Query, Post, Body } from "@nestjs/common";
 import { WalletService } from "./wallet.service";
-import { CurrentUser, type CurrentUserData } from "@/common/decorators/current-user.decorator";
+import { Session, type UserSession } from "@thallesp/nestjs-better-auth";
 import { ApiOkResponseWrapper } from "@/common/decorators/api-response.decorator";
 import { ApiTags, ApiBearerAuth, ApiBody } from "@nestjs/swagger";
 import {
@@ -21,18 +21,18 @@ export class WalletController {
   @Get("balance")
   @ApiBearerAuth()
   @ApiOkResponseWrapper(BalanceResponseDto)
-  async getBalance(@CurrentUser() user: CurrentUserData): Promise<BalanceResponseDto> {
-    return this.walletService.getBalance(user.userId);
+  async getBalance(@Session() session: UserSession): Promise<BalanceResponseDto> {
+    return this.walletService.getBalance(session.user.id);
   }
 
   @Get("transactions")
   @ApiBearerAuth()
   @ApiOkResponseWrapper(TransactionsResponseDto)
   async getTransactions(
-    @CurrentUser() user: CurrentUserData,
+    @Session() session: UserSession,
     @Query() query: TransactionsQueryDto,
   ): Promise<TransactionsResponseDto> {
-    return this.walletService.getTransactions(user.userId, query);
+    return this.walletService.getTransactions(session.user.id, query);
   }
 
   @Post("topup")
@@ -40,10 +40,10 @@ export class WalletController {
   @ApiBody({ type: TopUpWalletDto })
   @ApiOkResponseWrapper(TopUpResponseDto)
   async topUpWallet(
-    @CurrentUser() user: CurrentUserData,
+    @Session() session: UserSession,
     @Body() dto: TopUpWalletDto,
   ): Promise<TopUpResponseDto> {
-    return this.walletService.topUpWallet(user.userId, dto);
+    return this.walletService.topUpWallet(session.user.id, dto);
   }
 
   @Post("withdraw")
@@ -51,9 +51,9 @@ export class WalletController {
   @ApiBody({ type: WithdrawWalletDto })
   @ApiOkResponseWrapper(WithdrawResponseDto)
   async withdrawWallet(
-    @CurrentUser() user: CurrentUserData,
+    @Session() session: UserSession,
     @Body() dto: WithdrawWalletDto,
   ): Promise<WithdrawResponseDto> {
-    return this.walletService.withdrawWallet(user.userId, dto);
+    return this.walletService.withdrawWallet(session.user.id, dto);
   }
 }
