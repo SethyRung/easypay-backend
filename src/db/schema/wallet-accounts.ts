@@ -7,6 +7,7 @@ export const walletAccounts = pgTable(
     id: uuid("id").primaryKey().defaultRandom(),
     userId: text("user_id")
       .notNull()
+      .unique()
       .references(() => user.id, { onDelete: "cascade" }),
     currency: varchar("currency", { length: 3 }).default("USD").notNull(),
     balanceMinor: bigint("balance_minor", { mode: "number" }).default(0).notNull(),

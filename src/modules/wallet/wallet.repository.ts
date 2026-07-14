@@ -20,6 +20,31 @@ export class WalletRepository {
     return result[0];
   }
 
+  async getOrCreateWalletByUserId(userId: string) {
+    return this.databaseService.transaction(async (db) => {
+      const inserted = await db
+        .insert(walletAccounts)
+        .values({
+          userId,
+          currency: "USD",
+          balanceMinor: 0,
+          status: "active",
+        })
+        .onConflictDoNothing({ target: walletAccounts.userId })
+        .returning();
+      const wallet = inserted[0];
+      if (wallet) {
+        return wallet;
+      }
+      const existing = await db
+        .select()
+        .from(walletAccounts)
+        .where(eq(walletAccounts.userId, userId))
+        .limit(1);
+      return existing[0];
+    });
+  }
+
   async getTransactionHistory(walletAccountId: string, limit: number, offset: number) {
     const countResult = await this.db
       .select({ count: sql<number>`count(*)::int` })

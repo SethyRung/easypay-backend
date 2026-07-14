@@ -1,0 +1,1 @@
+ALTER TABLE "wallet_accounts" ADD CONSTRAINT "wallet_accounts_user_id_unique" UNIQUE("user_id");

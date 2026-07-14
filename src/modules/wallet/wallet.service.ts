@@ -22,10 +22,7 @@ export class WalletService {
   }
 
   async getBalance(userId: string) {
-    const wallet = await this.walletRepository.findWalletByUserId(userId);
-    if (!wallet) {
-      throw new NotFoundException("Wallet not found");
-    }
+    const wallet = await this.walletRepository.getOrCreateWalletByUserId(userId);
 
     return {
       currency: wallet.currency,
@@ -35,10 +32,7 @@ export class WalletService {
   }
 
   async getTransactions(userId: string, query: TransactionsQueryDto) {
-    const wallet = await this.walletRepository.findWalletByUserId(userId);
-    if (!wallet) {
-      throw new NotFoundException("Wallet not found");
-    }
+    const wallet = await this.walletRepository.getOrCreateWalletByUserId(userId);
 
     const { transactions, total } = await this.walletRepository.getTransactionHistory(
       wallet.id,
