@@ -1,5 +1,6 @@
 import { INestApplication } from "@nestjs/common";
 import { SwaggerModule, DocumentBuilder } from "@nestjs/swagger";
+import { appendAuthPaths } from "./auth-paths.openapi";
 
 export const setupSwagger = (app: INestApplication) => {
   const config = new DocumentBuilder()
@@ -16,6 +17,7 @@ export const setupSwagger = (app: INestApplication) => {
     .build();
 
   const document = SwaggerModule.createDocument(app, config);
+  appendAuthPaths(document);
 
   SwaggerModule.setup("api/docs", app, document);
 };
