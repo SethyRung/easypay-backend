@@ -7,6 +7,7 @@ import { AppService } from "@/app.service";
 import { DrizzleModule } from "@/db/drizzle.module";
 import { ResponseInterceptor } from "@/common/interceptors/response.interceptor";
 import { HttpExceptionFilter } from "@/common/filters/http-exception.filter";
+import { wrapBaResponseMiddleware } from "@/common/middleware/wrap-ba-response";
 import { validateEnv } from "@/config/env.validation";
 import { auth } from "@/auth";
 import { BridgeModule } from "@/modules/bridge/bridge.module";
@@ -23,6 +24,7 @@ import { PaymentsModule } from "@/modules/payments/payments.module";
     DrizzleModule,
     AuthModule.forRoot({
       auth,
+      middleware: wrapBaResponseMiddleware,
       bodyParser: {
         json: { limit: "1mb" },
         urlencoded: { limit: "1mb", extended: true },
