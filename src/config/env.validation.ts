@@ -11,11 +11,6 @@ const envSchema = z
     DATABASE_PASSWORD: z.string().default("easypay"),
     DATABASE_NAME: z.string().default("easypay"),
 
-    JWT_ACCESS_SECRET: z.string().min(1),
-    JWT_ACCESS_EXPIRATION: z.string().default("15m"),
-    JWT_REFRESH_SECRET: z.string().min(1),
-    JWT_REFRESH_EXPIRATION: z.string().default("7d"),
-
     BETTER_AUTH_SECRET: z.string().min(32),
     BETTER_AUTH_URL: z.string().url(),
 

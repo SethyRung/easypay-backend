@@ -9,8 +9,8 @@ export const setupSwagger = (app: INestApplication) => {
     .addBearerAuth({
       type: "http",
       scheme: "bearer",
-      bearerFormat: "JWT",
-      description: "Enter JWT token",
+      bearerFormat: "Token",
+      description: "Enter bearer token from sign-in response",
       in: "header",
     })
     .build();
