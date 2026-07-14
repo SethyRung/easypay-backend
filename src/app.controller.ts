@@ -1,7 +1,7 @@
 import { Controller, Get } from "@nestjs/common";
+import { AllowAnonymous } from "@thallesp/nestjs-better-auth";
 import { ApiOperation, ApiTags } from "@nestjs/swagger";
 import { AppService } from "./app.service";
-import { Public } from "@/common/decorators/public.decorator";
 import { ApiOkResponseWrapper } from "./common/decorators/api-response.decorator";
 
 @ApiTags("Health")
@@ -9,7 +9,7 @@ import { ApiOkResponseWrapper } from "./common/decorators/api-response.decorator
 export class AppController {
   constructor(private readonly appService: AppService) {}
 
-  @Public()
+  @AllowAnonymous()
   @Get("api/ping")
   @ApiOperation({ summary: "Ping endpoint" })
   @ApiOkResponseWrapper(String)
