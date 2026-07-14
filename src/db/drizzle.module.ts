@@ -1,8 +1,9 @@
-import { Module, Global } from "@nestjs/common";
+import { Global, Module } from "@nestjs/common";
 import { ConfigModule, ConfigService } from "@nestjs/config";
 import { drizzle } from "drizzle-orm/postgres-js";
 import postgres from "postgres";
 import { DatabaseService } from "./database.service";
+import * as schema from "./schema";
 
 @Global()
 @Module({
@@ -14,7 +15,7 @@ import { DatabaseService } from "./database.service";
       useFactory: (configService: ConfigService) => {
         const connectionString = `postgres://${configService.get("DATABASE_USER")}:${configService.get("DATABASE_PASSWORD")}@${configService.get("DATABASE_HOST")}:${configService.get("DATABASE_PORT")}/${configService.get("DATABASE_NAME")}`;
         const client = postgres(connectionString);
-        return drizzle(client);
+        return drizzle(client, { schema });
       },
     },
     DatabaseService,
