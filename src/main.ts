@@ -11,7 +11,6 @@ async function bootstrap() {
   app.enableShutdownHooks();
   app.enableCors({
     origin: config.get("CORS_ORIGIN"),
-    credentials: true,
   });
 
   app.useGlobalPipes(

@@ -13,7 +13,7 @@ The complete specification lives in `ANDROID_BACKEND_PLAN.md` (planned). Treat t
 - **Runtime**: Node.js (TypeScript)
 - **Framework**: NestJS 11
 - **ORM**: Drizzle ORM (PostgreSQL via `postgres` driver)
-- **Auth**: JWT access + refresh tokens (`@nestjs/jwt`, `passport-jwt`)
+- **Auth**: Better-auth sessions (`better-auth`, `@thallesp/nestjs-better-auth`) — bearer token transport via the `bearer()` plugin
 - **Validation**: `class-validator` + `class-transformer`
 - **Schema validation**: `zod` (used alongside class-validator where appropriate)
 - **Linting**: `oxlint` (not ESLint)
@@ -67,16 +67,18 @@ src/
   config/
     env.validation.ts            # runtime env validation
   common/
-    decorators/                  # @CurrentUser, etc.
+    decorators/                  # api-response helpers
     filters/                     # exception filters
-    guards/                      # JWT guard, role guards
     interceptors/                # ApiResponse wrapper, requestId/requestTime
     types/                       # shared types (ApiResponse<T>, ApiResponseCode, etc.)
   db/
     schema/                      # Drizzle table definitions
-    drizzle.module.ts
+    index.ts                     # singleton db client (loaded once at boot)
+    drizzle.module.ts            # exposes DATABASE_CLIENT to NestJS DI
+    database.service.ts          # transaction helper
+  auth.ts                        # better-auth server config (single source of truth for the auth object)
   modules/
-    auth/                        # register, login, refresh, logout, me
+    bridge/                      # bridge-issue (POST /api/bridge/issue — glitch federation)
     wallet/                      # balance, transactions
     transfers/                   # P2P transfers (core feature)
     payments/                    # payment flows
@@ -134,11 +136,13 @@ A global NestJS interceptor injects `requestId` (UUID) and `requestTime` (epoch 
 
 | Table             | Key fields                                                                                             |
 | ----------------- | ------------------------------------------------------------------------------------------------------ |
-| `users`           | `id`, `email`, `phone`, `password_hash`                                                                |
-| `wallet_accounts` | `id`, `user_id`, `balance_minor`, `status`                                                             |
-| `transfers`       | `id`, `sender_user_id`, `recipient_user_id`, `amount_minor`, `fee_minor`, `idempotency_key`            |
+| `user`            | `id` (text), `email`, `phone`, `name` — BA's auth table; `password_hash` lives in `account`            |
+| `account`         | `id`, `user_id` (text FK), `provider_id`, `account_id`, `password` (credential provider)               |
+| `session`         | `id`, `user_id` (text FK), `token`, `expires_at` — BA sessions                                         |
+| `verification`    | `id`, `identifier`, `value`, `expires_at` — BA email verification                                      |
+| `wallet_accounts` | `id`, `user_id` (text FK), `balance_minor`, `status`                                                   |
+| `transfers`       | `id`, `sender_user_id`, `recipient_user_id` (text FKs), `amount_minor`, `fee_minor`, `idempotency_key` |
 | `ledger_entries`  | `id`, `wallet_account_id`, `entry_type`, `amount_minor`, `balance_before_minor`, `balance_after_minor` |
-| `refresh_tokens`  | `id`, `user_id`, `token_hash`, `expires_at`                                                            |
 
 See `src/db/schema/` for the canonical Drizzle definitions and `ANDROID_BACKEND_PLAN.md` for the full spec.
 
@@ -162,21 +166,21 @@ Follow this order in `TransfersService.executeTransfer()`:
 
 ## Auth Rules
 
-- Access tokens: short-lived JWTs carried in `Authorization: Bearer ...`.
-- Refresh tokens: opaque, stored hashed in `refresh_tokens.token_hash` — never store raw.
-- `POST /auth/logout` MUST revoke the current refresh token (`revoked_at = now()`).
-- `POST /auth/refresh` issues a new access token AND rotates the refresh token (revoke old, insert new).
-- `GET /auth/me` returns the current user based on the access token's subject.
-- Hash passwords with `bcrypt` (cost factor ≥ 12).
+- Better-auth owns `/api/auth/*` — controllers in our app MUST NOT redefine `login`, `register`, `refresh`, `logout`, `me`. Use the BA built-ins.
+- Session token is a single opaque bearer string issued in the `Set-Auth-Token` response header on sign-up / sign-in. Mobile clients send it as `Authorization: Bearer <token>` on every protected request. Valid 7 days (`session.expiresIn` in `src/auth.ts`).
+- `POST /api/auth/sign-out` MUST revoke the current session (BA writes `session.id` → invalidated). Always returns 200.
+- `GET /api/auth/get-session` returns `{ user, session }` — replaces the legacy `GET /auth/me`. Used by the mobile session-refresh path.
+- Passwords are bcrypt-hashed (cost factor ≥ 12) inside `account.password` under the `credential` provider. The `user` table does NOT carry a password column.
+- Use the BA-provided `@Session() session: UserSession` decorator (from `@thallesp/nestjs-better-auth`) — read `session.user.id` for the caller. Use `@AllowAnonymous()` to opt a route out of the global guard.
 
 ## Security Requirements
 
 - **All balance mutations** go through Drizzle transactions with row-level locks — no exceptions.
-- **Hash** refresh tokens in DB (`bcrypt` or `argon2`) — never store the raw token.
-- **Rate limit** `POST /auth/login` and `POST /transfers` (NestJS `@nestjs/throttler` recommended).
+- **Hash** passwords in DB with `bcrypt` (cost ≥ 12) before storing in `account.password` — never store plaintext, never log the hash.
+- **Rate limit** `POST /api/auth/sign-in/email` and `POST /api/transfers`. BA's built-in rate limit (in `src/auth.ts`) covers the auth endpoints.
 - **Server-side caps** on transfer amount per transaction and per day — enforce in the service, not the DTO.
 - **Audit log** all auth events and every transfer attempt (success and failure) with `requestId`.
-- **Never log** passwords, tokens, OTPs, or full PAN/account numbers. Mask phone numbers in logs (`+91******1234`).
+- **Never log** passwords, session tokens, OTPs, or full PAN/account numbers. Mask phone numbers in logs (`+91******1234`).
 - Validate every env var at boot via `src/config/env.validation.ts` — fail fast on misconfiguration.
 
 ## Code Conventions
