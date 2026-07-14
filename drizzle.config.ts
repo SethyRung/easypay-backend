@@ -1,17 +1,21 @@
-import type { Config } from "drizzle-kit";
-import { ConfigService } from "@nestjs/config";
+import { config as loadEnv } from "dotenv";
+import { defineConfig } from "drizzle-kit";
 
-const config = new ConfigService();
+loadEnv({ path: ".env" });
 
-export default {
+function readConnectionString(): string {
+  if (process.env.DATABASE_URL) return process.env.DATABASE_URL;
+  const user = process.env.DATABASE_USER ?? "easypay";
+  const password = process.env.DATABASE_PASSWORD ?? "easypay";
+  const host = process.env.DATABASE_HOST ?? "localhost";
+  const port = process.env.DATABASE_PORT ?? "5432";
+  const dbName = process.env.DATABASE_NAME ?? "easypay";
+  return `postgres://${user}:${password}@${host}:${port}/${dbName}`;
+}
+
+export default defineConfig({
   schema: "./src/db/schema",
   out: "./drizzle",
   dialect: "postgresql",
-  dbCredentials: {
-    host: config.get<string>("DATABASE_HOST")!,
-    port: Number(config.get<string>("DATABASE_PORT"))!,
-    user: config.get<string>("DATABASE_USER")!,
-    password: config.get<string>("DATABASE_PASSWORD")!,
-    database: config.get<string>("DATABASE_NAME")!,
-  },
-} satisfies Config;
+  dbCredentials: { url: readConnectionString() },
+});
