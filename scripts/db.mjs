@@ -40,19 +40,23 @@ try {
       console.log(`  ${dim("skip")}  ${m.folderMillis}`);
       continue;
     }
-    console.log(`  ${green("apply")} ${m.folderMillis} (${m.sql.length} statement${m.sql.length === 1 ? "" : "s"})`);
+    console.log(
+      `  ${green("apply")} ${m.folderMillis} (${m.sql.length} statement${m.sql.length === 1 ? "" : "s"})`,
+    );
     await client.begin(async (sql) => {
       for (const stmt of m.sql) await sql.unsafe(stmt);
-      await sql.unsafe(
-        `INSERT INTO "${SCHEMA}"."${TABLE}" (hash, created_at) VALUES ($1, $2)`,
-        [m.hash, m.folderMillis],
-      );
+      await sql.unsafe(`INSERT INTO "${SCHEMA}"."${TABLE}" (hash, created_at) VALUES ($1, $2)`, [
+        m.hash,
+        m.folderMillis,
+      ]);
     });
     applied++;
   }
-  console.log(applied === 0
-    ? green("✓ database is up to date.")
-    : green(`✓ applied ${applied} migration${applied === 1 ? "" : "s"}.`));
+  console.log(
+    applied === 0
+      ? green("✓ database is up to date.")
+      : green(`✓ applied ${applied} migration${applied === 1 ? "" : "s"}.`),
+  );
 } finally {
   await client.end();
 }

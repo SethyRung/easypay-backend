@@ -15,6 +15,13 @@
       "when": 1784015745786,
       "tag": "0001_wise_midnight",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1784180381946,
+      "tag": "0002_loving_proudstar",
+      "breakpoints": true
     }
   ]
 }

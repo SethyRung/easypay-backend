@@ -14,6 +14,8 @@ import { BridgeModule } from "@/modules/bridge/bridge.module";
 import { WalletModule } from "@/modules/wallet/wallet.module";
 import { TransfersModule } from "@/modules/transfers/transfers.module";
 import { PaymentsModule } from "@/modules/payments/payments.module";
+import { NotificationsModule } from "@/modules/notifications/notifications.module";
+import { UserModule } from "@/modules/user/user.module";
 
 @Module({
   imports: [
@@ -34,6 +36,8 @@ import { PaymentsModule } from "@/modules/payments/payments.module";
     WalletModule,
     TransfersModule,
     PaymentsModule,
+    NotificationsModule,
+    UserModule,
   ],
   controllers: [AppController],
   providers: [
