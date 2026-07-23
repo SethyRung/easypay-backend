@@ -11,9 +11,10 @@ import { catchError, firstValueFrom, of, timeout } from "rxjs";
 import { AxiosResponse } from "axios";
 import { BridgeUserRepository } from "./bridge-user.repository";
 import { BridgeIssueResponseDto } from "./dto/bridge-issue-response.dto";
+import { ApiResponseCode } from "@/common/types/api-response";
 
 const GLITCH_TIMEOUT_MS = 5000;
-const BRIDGE_PATH = "/api/auth/bridge-issue";
+const BRIDGE_PATH = "/api/bridge/issue";
 
 @Injectable()
 export class BridgeIssueService {
@@ -30,8 +31,8 @@ export class BridgeIssueService {
     }
 
     const hash = this.computeHash(user.id, user.email);
-    const cookie = await this.forwardToGlitch(user.id, user.email, hash);
-    return { cookie };
+    const ticket = await this.forwardToGlitch(user.id, user.email, hash);
+    return { ticket };
   }
 
   private computeHash(userId: string, email: string): string {
@@ -68,21 +69,15 @@ export class BridgeIssueService {
         ),
     );
 
-    return this.handleGlitchResponse(response);
-  }
-
-  private async handleGlitchResponse(response: AxiosResponse) {
-    console.log("Glitch response:", response.status, response.data);
     const status = response.status;
     const envelopeCode: string | undefined = response.data?.status?.code;
-    const isNotFound =
-      status === 404 || envelopeCode === "NOT_FOUND" || envelopeCode === "NotFound";
+    const envelopeMessage: string | undefined = response.data?.status?.message;
 
-    if (isNotFound) {
+    if (status === 404 || envelopeCode === ApiResponseCode.NotFound) {
       throw new NotFoundException("User not provisioned on bridge partner");
     }
 
-    if (status === 401 || envelopeCode === "UNAUTHORIZED" || envelopeCode === "Unauthorized") {
+    if (status === 401 || envelopeCode === ApiResponseCode.Unauthorized) {
       throw new UnauthorizedException("Bridge authentication rejected");
     }
 
@@ -94,18 +89,32 @@ export class BridgeIssueService {
       throw new ServiceUnavailableException("Bridge partner returned an unexpected response");
     }
 
-    const cookie = this.extractSetCookie(response);
-    if (!cookie) {
-      throw new ServiceUnavailableException("Bridge partner response missing session cookie");
+    if (envelopeCode === ApiResponseCode.InvalidRequest) {
+      throw new ServiceUnavailableException(
+        envelopeMessage
+          ? `Bridge partner rejected request: ${envelopeMessage}`
+          : "Bridge partner rejected request",
+      );
     }
-    return cookie;
+
+    if (envelopeCode === ApiResponseCode.InternalError) {
+      throw new ServiceUnavailableException(
+        envelopeMessage
+          ? `Bridge partner internal error: ${envelopeMessage}`
+          : "Bridge partner internal error",
+      );
+    }
+
+    const ticket = this.extractTicket(response);
+    if (!ticket) {
+      throw new ServiceUnavailableException("Bridge partner response missing ticket");
+    }
+    return ticket;
   }
 
-  private extractSetCookie(response: AxiosResponse) {
-    const raw = response.headers?.["set-cookie"];
-    if (!raw) return undefined;
-    if (Array.isArray(raw)) return raw[0];
-    return String(raw);
+  private extractTicket(response: AxiosResponse) {
+    const data = response.data?.data?.ticket;
+    return typeof data === "string" && data.length > 0 ? data : undefined;
   }
 
   private networkErrorResponse(): AxiosResponse {
@@ -115,6 +124,6 @@ export class BridgeIssueService {
       statusText: "",
       headers: {},
       config: {} as never,
-    };
+    } as AxiosResponse;
   }
 }
