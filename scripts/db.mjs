@@ -9,21 +9,11 @@ const SCHEMA = "drizzle";
 const TABLE = "__drizzle_migrations";
 const MIGRATIONS_DIR = "./drizzle";
 
-function connStr() {
-  if (process.env.DATABASE_URL) return process.env.DATABASE_URL;
-  const u = process.env.DATABASE_USER ?? "easypay";
-  const p = process.env.DATABASE_PASSWORD ?? "easypay";
-  const h = process.env.DATABASE_HOST ?? "localhost";
-  const port = process.env.DATABASE_PORT ?? "5432";
-  const db = process.env.DATABASE_NAME ?? "easypay";
-  return `postgres://${u}:${p}@${h}:${port}/${db}`;
-}
-
 const c = (color, text) => `\x1b[${color}m${text}\x1b[0m`;
 const green = (t) => c(32, t);
 const dim = (t) => c(2, t);
 
-const client = postgres(connStr(), { max: 1 });
+const client = postgres(process.env.DATABASE_URL ?? "", { max: 1 });
 
 try {
   await client.unsafe(`CREATE SCHEMA IF NOT EXISTS "${SCHEMA}"`);

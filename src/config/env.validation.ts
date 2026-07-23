@@ -2,24 +2,20 @@ import { z } from "zod";
 
 const envSchema = z
   .object({
-    NODE_ENV: z.enum(["development", "production", "test"]).default("development"),
+    NODE_ENV: z.enum(["development", "production"]).default("development"),
     PORT: z.string().default("8080"),
 
-    DATABASE_HOST: z.string().default("localhost"),
-    DATABASE_PORT: z.string().default("5432"),
-    DATABASE_USER: z.string().default("easypay"),
-    DATABASE_PASSWORD: z.string().default("easypay"),
-    DATABASE_NAME: z.string().default("easypay"),
+    DATABASE_URL: z.string().default(""),
 
     BETTER_AUTH_SECRET: z.string().min(32),
-    BETTER_AUTH_URL: z.string().url(),
+    BETTER_AUTH_URL: z.url(),
 
     TRANSFER_FEE_MINOR: z.string().default("200"),
     TOPUP_MAX_PER_TX_MINOR: z.string().default("100000"),
     TOPUP_MAX_DAILY_MINOR: z.string().default("500000"),
 
     BRIDGE_SHARED_SECRET: z.string().min(32),
-    GLITCH_BASE_URL: z.string().url(),
+    GLITCH_BASE_URL: z.url(),
 
     CORS_ORIGIN: z.string().default("*"),
   })
