@@ -1,12 +1,12 @@
 import { Inject, Injectable } from "@nestjs/common";
-import { PostgresJsDatabase } from "drizzle-orm/postgres-js";
 import { and, desc, eq } from "drizzle-orm";
+import { DATABASE, type Database } from "@/db/database.module";
 import { notifications } from "@/db/schema";
 import type { NotificationResponseDto } from "./dto/notification.dto";
 
 @Injectable()
 export class NotificationsRepository {
-  constructor(@Inject("DATABASE_CLIENT") private readonly db: PostgresJsDatabase) {}
+  constructor(@Inject(DATABASE) private readonly db: Database) {}
 
   async listForUser(userId: string, unreadOnly: boolean): Promise<NotificationResponseDto[]> {
     const where = unreadOnly

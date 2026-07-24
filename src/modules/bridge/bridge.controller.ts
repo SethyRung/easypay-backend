@@ -7,7 +7,7 @@ import { ApiOkResponseWrapper } from "@/common/decorators/api-response.decorator
 
 @ApiTags("bridge")
 @ApiBearerAuth()
-@Controller("api/bridge")
+@Controller("bridge")
 export class BridgeController {
   constructor(private readonly bridgeIssueService: BridgeIssueService) {}
 

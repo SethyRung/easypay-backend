@@ -6,7 +6,7 @@ import { Session, type UserSession } from "@thallesp/nestjs-better-auth";
 import { ApiOkResponseWrapper } from "@/common/decorators/api-response.decorator";
 
 @ApiTags("payments")
-@Controller("api/payments")
+@Controller("payments")
 export class PaymentsController {
   constructor(private readonly paymentsService: PaymentsService) {}
 

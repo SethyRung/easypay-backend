@@ -4,7 +4,7 @@ import { APP_INTERCEPTOR, APP_FILTER } from "@nestjs/core";
 import { AuthModule } from "@thallesp/nestjs-better-auth";
 import { AppController } from "@/app.controller";
 import { AppService } from "@/app.service";
-import { DrizzleModule } from "@/db/drizzle.module";
+import { DatabaseModule } from "@/db/database.module";
 import { ResponseInterceptor } from "@/common/interceptors/response.interceptor";
 import { HttpExceptionFilter } from "@/common/filters/http-exception.filter";
 import { wrapBaResponseMiddleware } from "@/common/middleware/wrap-ba-response";
@@ -23,7 +23,7 @@ import { UserModule } from "@/modules/user/user.module";
       isGlobal: true,
       validate: validateEnv,
     }),
-    DrizzleModule,
+    DatabaseModule,
     AuthModule.forRoot({
       auth,
       middleware: wrapBaResponseMiddleware,

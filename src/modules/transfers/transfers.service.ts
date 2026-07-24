@@ -1,9 +1,9 @@
-import { Injectable, NotFoundException, BadRequestException } from "@nestjs/common";
+import { Inject, Injectable, NotFoundException, BadRequestException } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
-import { DatabaseService } from "@/db/database.service";
+import { eq } from "drizzle-orm";
+import { DATABASE, type Database } from "@/db/database.module";
 import { TransfersRepository } from "./transfers.repository";
 import { transfers, ledgerEntries, walletAccounts } from "@/db/schema";
-import { eq } from "drizzle-orm";
 import { CreateTransferDto, TransferReceiptDto } from "./dto";
 
 @Injectable()
@@ -13,7 +13,7 @@ export class TransfersService {
   constructor(
     private readonly transfersRepository: TransfersRepository,
     private readonly configService: ConfigService,
-    private readonly databaseService: DatabaseService,
+    @Inject(DATABASE) private readonly db: Database,
   ) {
     this.feeMinor = Number(this.configService.get("TRANSFER_FEE_MINOR") || "200");
   }
@@ -48,7 +48,7 @@ export class TransfersService {
 
     const totalDebitMinor = amountMinor + this.feeMinor;
 
-    return this.databaseService.transaction(async (db) => {
+    return this.db.transaction(async (db) => {
       const senderWalletResult = await db
         .select()
         .from(walletAccounts)
@@ -153,8 +153,7 @@ export class TransfersService {
     }
 
     // Get ledger entries to find balances
-    const senderDebitEntries = await this.databaseService
-      .getClient()
+    const senderDebitEntries = await this.db
       .select()
       .from(ledgerEntries)
       .where(eq(ledgerEntries.transferId, transferId));

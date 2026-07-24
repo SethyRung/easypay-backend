@@ -1,11 +1,11 @@
 import { Inject, Injectable } from "@nestjs/common";
-import { PostgresJsDatabase } from "drizzle-orm/postgres-js";
 import { eq } from "drizzle-orm";
+import { DATABASE, type Database } from "@/db/database.module";
 import { user, walletAccounts } from "@/db/schema";
 
 @Injectable()
 export class UserRepository {
-  constructor(@Inject("DATABASE_CLIENT") private readonly db: PostgresJsDatabase) {}
+  constructor(@Inject(DATABASE) private readonly db: Database) {}
 
   async findById(userId: string) {
     const rows = await this.db

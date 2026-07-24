@@ -10,7 +10,7 @@ export class AppController {
   constructor(private readonly appService: AppService) {}
 
   @AllowAnonymous()
-  @Get("api/ping")
+  @Get("ping")
   @ApiOperation({ summary: "Ping endpoint" })
   @ApiOkResponseWrapper(String)
   ping(): string {

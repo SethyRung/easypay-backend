@@ -7,7 +7,7 @@ import { UserProfileDto } from "./dto/user-profile.dto";
 
 @ApiTags("users")
 @ApiBearerAuth()
-@Controller("api/user")
+@Controller("user")
 export class UserController {
   constructor(private readonly userService: UserService) {}
 

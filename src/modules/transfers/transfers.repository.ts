@@ -1,11 +1,11 @@
 import { Injectable, Inject } from "@nestjs/common";
-import { PostgresJsDatabase } from "drizzle-orm/postgres-js";
-import { transfers, user, walletAccounts } from "@/db/schema";
 import { eq, and } from "drizzle-orm";
+import { DATABASE, type Database } from "@/db/database.module";
+import { transfers, user, walletAccounts } from "@/db/schema";
 
 @Injectable()
 export class TransfersRepository {
-  constructor(@Inject("DATABASE_CLIENT") private readonly db: PostgresJsDatabase) {}
+  constructor(@Inject(DATABASE) private readonly db: Database) {}
 
   async findByPhone(phone: string) {
     const result = await this.db.select().from(user).where(eq(user.phone, phone)).limit(1);

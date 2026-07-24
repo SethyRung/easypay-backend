@@ -18,9 +18,9 @@
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
     "test:e2e": "jest --config ./test/jest-e2e.json",
-    "db:generate": "drizzle-kit generate",
-    "db:migrate": "node scripts/db.mjs",
     "db:push": "drizzle-kit push",
+    "db:generate": "drizzle-kit generate",
+    "db:migrate": "drizzle-kit migrate",
     "db:studio": "drizzle-kit studio"
   },
   "dependencies": {
@@ -28,6 +28,7 @@
     "@nestjs/common": "^11.1.18",
     "@nestjs/config": "^4.0.3",
     "@nestjs/core": "^11.1.18",
+    "@nestjs/mapped-types": "^2.1.1",
     "@nestjs/platform-express": "^11.1.18",
     "@nestjs/swagger": "^11.2.6",
     "@thallesp/nestjs-better-auth": "^2.7.0",
@@ -54,6 +55,7 @@
     "@types/node": "^25.5.2",
     "@types/supertest": "^7.2.0",
     "drizzle-kit": "^0.31.10",
+    "globals": "^17.7.0",
     "jest": "^30.3.0",
     "oxfmt": "^0.43.0",
     "oxlint": "^1.58.0",
@@ -82,13 +84,7 @@
     "testEnvironment": "node",
     "testRegex": ".*\\.spec\\.ts$",
     "transform": {
-      "^.+\\.(t|j)s$": [
-        "ts-jest",
-        {
-          "useESM": false
-        }
-      ]
+      "^.+\\.(t|j)s$": "ts-jest"
     }
-  },
-  "packageManager": "pnpm@10.32.1"
+  }
 }

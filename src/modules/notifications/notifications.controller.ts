@@ -7,7 +7,7 @@ import { MarkReadResponseDto, NotificationResponseDto } from "./dto/notification
 
 @ApiTags("notifications")
 @ApiBearerAuth()
-@Controller("api/notifications")
+@Controller("notifications")
 export class NotificationsController {
   constructor(private readonly notificationsService: NotificationsService) {}
 

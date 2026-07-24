@@ -2,7 +2,9 @@ import { betterAuth } from "better-auth";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
 import { bearer } from "better-auth/plugins";
 import * as bcrypt from "bcrypt";
-import { db } from "@/db";
+import postgres from "postgres";
+import { drizzle } from "drizzle-orm/postgres-js";
+import * as schema from "@/db/schema";
 
 const BCRYPT_COST = 12;
 const ONE_DAY_SECONDS = 60 * 60 * 24;
@@ -10,14 +12,12 @@ const FIVE_MINUTES_SECONDS = 60 * 5;
 
 const secret = process.env.BETTER_AUTH_SECRET;
 const baseURL = process.env.BETTER_AUTH_URL;
-if (!secret || secret.length < 32) {
-  throw new Error("BETTER_AUTH_SECRET is required and must be at least 32 characters");
-}
-if (!baseURL) {
-  throw new Error("BETTER_AUTH_URL is required (e.g. http://localhost:8080)");
-}
-
 const isProd = process.env.NODE_ENV === "production";
+const corsOrigin = process.env.CORS_ORIGIN || "*";
+
+const url = process.env.DATABASE_URL ?? "";
+const client = postgres(url, { max: 10 });
+const db = drizzle(client, { schema });
 
 function logMockEmail(label: string, to: string, url: string): void {
   console.log(`\n[mock email] ${label}\n  to: ${to}\n  link: ${url}\n`);
@@ -84,9 +84,8 @@ export const auth = betterAuth({
   },
 
   trustedOrigins: (() => {
-    const raw = process.env.CORS_ORIGIN;
-    if (!raw || raw === "*") return [];
-    return raw
+    if (corsOrigin === "*") return [];
+    return corsOrigin
       .split(",")
       .map((s) => s.trim())
       .filter(Boolean);

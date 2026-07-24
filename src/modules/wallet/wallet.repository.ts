@@ -1,15 +1,11 @@
 import { Injectable, Inject, BadRequestException } from "@nestjs/common";
-import { PostgresJsDatabase } from "drizzle-orm/postgres-js";
-import { walletAccounts, ledgerEntries } from "@/db/schema";
 import { eq, desc, sql, and, gte, like } from "drizzle-orm";
-import { DatabaseService } from "@/db/database.service";
+import { DATABASE, type Database } from "@/db/database.module";
+import { walletAccounts, ledgerEntries } from "@/db/schema";
 
 @Injectable()
 export class WalletRepository {
-  constructor(
-    @Inject("DATABASE_CLIENT") private readonly db: PostgresJsDatabase,
-    private readonly databaseService: DatabaseService,
-  ) {}
+  constructor(@Inject(DATABASE) private readonly db: Database) {}
 
   async findWalletByUserId(userId: string) {
     const result = await this.db
@@ -21,7 +17,7 @@ export class WalletRepository {
   }
 
   async getOrCreateWalletByUserId(userId: string) {
-    return this.databaseService.transaction(async (db) => {
+    return this.db.transaction(async (db) => {
       const inserted = await db
         .insert(walletAccounts)
         .values({
@@ -73,7 +69,7 @@ export class WalletRepository {
   }
 
   async topUpWallet(userId: string, amountMinor: number, maxDailyMinor: number, note?: string) {
-    return this.databaseService.transaction(async (db) => {
+    return this.db.transaction(async (db) => {
       const updatedWalletResult = await db
         .update(walletAccounts)
         .set({
@@ -135,7 +131,7 @@ export class WalletRepository {
   }
 
   async withdrawWallet(userId: string, amountMinor: number, note?: string) {
-    return this.databaseService.transaction(async (db) => {
+    return this.db.transaction(async (db) => {
       const walletResult = await db
         .select()
         .from(walletAccounts)
