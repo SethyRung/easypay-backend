@@ -14,6 +14,7 @@ import { TransfersModule } from '@/transfers/transfers.module';
 import { PaymentsModule } from '@/payments/payments.module';
 import { NotificationsModule } from '@/notifications/notifications.module';
 import { UserModule } from '@/user/user.module';
+import { PingModule } from '@/ping/ping.module';
 
 @Module({
   imports: [
@@ -36,6 +37,7 @@ import { UserModule } from '@/user/user.module';
     PaymentsModule,
     NotificationsModule,
     UserModule,
+    PingModule,
   ],
   providers: [
     {
