@@ -25,10 +25,6 @@ services:
       - .env
     environment:
       DATABASE_HOST: postgres
-    command:
-      - sh
-      - -c
-      - "node scripts/db.mjs && node dist/src/main"
     ports:
       - "8080:8080"
     depends_on:
