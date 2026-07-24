@@ -1,10 +1,10 @@
-import { betterAuth } from "better-auth";
-import { drizzleAdapter } from "better-auth/adapters/drizzle";
-import { bearer } from "better-auth/plugins";
-import * as bcrypt from "bcrypt";
-import postgres from "postgres";
-import { drizzle } from "drizzle-orm/postgres-js";
-import * as schema from "@/db/schema";
+import { betterAuth } from 'better-auth';
+import { drizzleAdapter } from 'better-auth/adapters/drizzle';
+import { bearer } from 'better-auth/plugins';
+import * as bcrypt from 'bcrypt';
+import postgres from 'postgres';
+import { drizzle } from 'drizzle-orm/postgres-js';
+import * as schema from '@/db/schema';
 
 const BCRYPT_COST = 12;
 const ONE_DAY_SECONDS = 60 * 60 * 24;
@@ -12,10 +12,10 @@ const FIVE_MINUTES_SECONDS = 60 * 5;
 
 const secret = process.env.BETTER_AUTH_SECRET;
 const baseURL = process.env.BETTER_AUTH_URL;
-const isProd = process.env.NODE_ENV === "production";
-const corsOrigin = process.env.CORS_ORIGIN || "*";
+const isProd = process.env.NODE_ENV === 'production';
+const corsOrigin = process.env.CORS_ORIGIN || '*';
 
-const url = process.env.DATABASE_URL ?? "";
+const url = process.env.DATABASE_URL ?? '';
 const client = postgres(url, { max: 10 });
 const db = drizzle(client, { schema });
 
@@ -24,10 +24,10 @@ function logMockEmail(label: string, to: string, url: string): void {
 }
 
 export const auth = betterAuth({
-  appName: "EasyPay",
+  appName: 'EasyPay',
   secret,
   baseURL,
-  database: drizzleAdapter(db, { provider: "pg" }),
+  database: drizzleAdapter(db, { provider: 'pg' }),
 
   emailAndPassword: {
     enabled: true,
@@ -40,7 +40,7 @@ export const auth = betterAuth({
         bcrypt.compare(password, hash),
     },
     sendResetPassword: async ({ user, url }) => {
-      logMockEmail("Password reset", user.email, url);
+      logMockEmail('Password reset', user.email, url);
     },
     requireEmailVerification: false,
   },
@@ -49,7 +49,7 @@ export const auth = betterAuth({
     sendOnSignUp: true,
     autoSignInAfterVerification: true,
     sendVerificationEmail: async ({ user, url }) => {
-      logMockEmail("Verify your email", user.email, url);
+      logMockEmail('Verify your email', user.email, url);
     },
   },
 
@@ -62,7 +62,7 @@ export const auth = betterAuth({
   user: {
     additionalFields: {
       phone: {
-        type: "string",
+        type: 'string',
         required: true,
         input: true,
       },
@@ -70,7 +70,7 @@ export const auth = betterAuth({
   },
 
   advanced: {
-    cookiePrefix: "easypay",
+    cookiePrefix: 'easypay',
     useSecureCookies: isProd,
   },
 
@@ -84,9 +84,9 @@ export const auth = betterAuth({
   },
 
   trustedOrigins: (() => {
-    if (corsOrigin === "*") return [];
+    if (corsOrigin === '*') return [];
     return corsOrigin
-      .split(",")
+      .split(',')
       .map((s) => s.trim())
       .filter(Boolean);
   })(),

@@ -1,7 +1,11 @@
-import { v4 as uuidv4 } from "uuid";
-import { ApiResponseCode } from "@/common/types/api-response";
+import { v4 as uuidv4 } from 'uuid';
+import { ApiResponseCode } from '@/common/types/api-response';
 
-type BaMiddleware = (req: any, res: any, next: (error?: unknown) => void) => void | Promise<void>;
+type BaMiddleware = (
+  req: any,
+  res: any,
+  next: (error?: unknown) => void,
+) => void | Promise<void>;
 
 const HTTP_TO_API_CODE: Record<number, ApiResponseCode> = {
   400: ApiResponseCode.InvalidRequest,
@@ -20,8 +24,8 @@ function mapHttpToApiCode(status: number): ApiResponseCode {
 function asBuffer(chunk: unknown): Buffer {
   if (Buffer.isBuffer(chunk)) return chunk;
   if (chunk instanceof Uint8Array) return Buffer.from(chunk);
-  if (typeof chunk === "string") return Buffer.from(chunk, "utf-8");
-  return Buffer.from(String(chunk), "utf-8");
+  if (typeof chunk === 'string') return Buffer.from(chunk, 'utf-8');
+  return Buffer.from(String(chunk), 'utf-8');
 }
 
 /**
@@ -64,7 +68,7 @@ export const wrapBaResponseMiddleware: BaMiddleware = (req, res, next) => {
       bufferedChunks.push(asBuffer(chunk));
     }
 
-    const originalBody = Buffer.concat(bufferedChunks).toString("utf-8");
+    const originalBody = Buffer.concat(bufferedChunks).toString('utf-8');
     let bodyToWrite = originalBody;
     let responseStatus = 200;
 
@@ -73,28 +77,30 @@ export const wrapBaResponseMiddleware: BaMiddleware = (req, res, next) => {
 
       if (
         parsed !== null &&
-        typeof parsed === "object" &&
+        typeof parsed === 'object' &&
         parsed.status &&
-        typeof parsed.status === "object" &&
-        "requestId" in parsed.status
+        typeof parsed.status === 'object' &&
+        'requestId' in parsed.status
       ) {
         bodyToWrite = originalBody;
         responseStatus = interceptedStatus;
       } else {
         const isError = interceptedStatus >= 400;
-        const code = isError ? mapHttpToApiCode(interceptedStatus) : ApiResponseCode.Success;
+        const code = isError
+          ? mapHttpToApiCode(interceptedStatus)
+          : ApiResponseCode.Success;
         let message: string;
         let data: unknown;
 
         if (isError) {
           const maybeMessage =
-            parsed !== null && typeof parsed === "object" && "message" in parsed
+            parsed !== null && typeof parsed === 'object' && 'message' in parsed
               ? (parsed as { message: unknown }).message
               : undefined;
-          message = typeof maybeMessage === "string" ? maybeMessage : code;
+          message = typeof maybeMessage === 'string' ? maybeMessage : code;
           data = null;
         } else {
-          message = "Success";
+          message = 'Success';
           data = parsed;
         }
 
@@ -114,16 +120,16 @@ export const wrapBaResponseMiddleware: BaMiddleware = (req, res, next) => {
       responseStatus = interceptedStatus;
     }
 
-    res.removeHeader("content-length");
-    res.removeHeader("transfer-encoding");
-    res.setHeader("Content-Length", Buffer.byteLength(bodyToWrite, "utf-8"));
-    res.setHeader("Content-Type", "application/json");
+    res.removeHeader('content-length');
+    res.removeHeader('transfer-encoding');
+    res.setHeader('Content-Length', Buffer.byteLength(bodyToWrite, 'utf-8'));
+    res.setHeader('Content-Type', 'application/json');
 
     isIntercepting = false;
     bufferedChunks.length = 0;
 
     originalWriteHead.call(res, responseStatus);
-    return originalEnd.call(res, bodyToWrite, "utf-8");
+    return originalEnd.call(res, bodyToWrite, 'utf-8');
   };
 
   next();

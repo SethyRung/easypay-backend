@@ -1,7 +1,13 @@
-import { ExceptionFilter, Catch, ArgumentsHost, HttpException, HttpStatus } from "@nestjs/common";
-import { Response } from "express";
-import { v4 as uuidv4 } from "uuid";
-import { ApiResponseCode } from "../types/api-response";
+import {
+  ExceptionFilter,
+  Catch,
+  ArgumentsHost,
+  HttpException,
+  HttpStatus,
+} from '@nestjs/common';
+import { Response } from 'express';
+import { v4 as uuidv4 } from 'uuid';
+import { ApiResponseCode } from '../types/api-response';
 
 @Catch()
 export class HttpExceptionFilter implements ExceptionFilter {
@@ -11,7 +17,7 @@ export class HttpExceptionFilter implements ExceptionFilter {
     const requestId = uuidv4();
     const requestTime = Date.now();
 
-    let message = "Internal server error";
+    let message = 'Internal server error';
     let code = ApiResponseCode.InternalError;
 
     if (exception instanceof HttpException) {
@@ -20,9 +26,12 @@ export class HttpExceptionFilter implements ExceptionFilter {
 
       if (status === HttpStatus.BAD_REQUEST) {
         const exceptionResponse = exception.getResponse();
-        if (typeof exceptionResponse === "object" && "message" in exceptionResponse) {
+        if (
+          typeof exceptionResponse === 'object' &&
+          'message' in exceptionResponse
+        ) {
           message = Array.isArray(exceptionResponse.message)
-            ? exceptionResponse.message.join(", ")
+            ? exceptionResponse.message.join(', ')
             : message;
         }
         code = ApiResponseCode.ValidationError;

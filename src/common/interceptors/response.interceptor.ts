@@ -1,8 +1,13 @@
-import { Injectable, NestInterceptor, ExecutionContext, CallHandler } from "@nestjs/common";
-import { Observable } from "rxjs";
-import { map } from "rxjs/operators";
-import { v4 as uuidv4 } from "uuid";
-import { ApiResponseCode } from "../types/api-response";
+import {
+  Injectable,
+  NestInterceptor,
+  ExecutionContext,
+  CallHandler,
+} from '@nestjs/common';
+import { Observable } from 'rxjs';
+import { map } from 'rxjs/operators';
+import { v4 as uuidv4 } from 'uuid';
+import { ApiResponseCode } from '../types/api-response';
 
 @Injectable()
 export class ResponseInterceptor<T> implements NestInterceptor<T, any> {
@@ -14,11 +19,11 @@ export class ResponseInterceptor<T> implements NestInterceptor<T, any> {
       map((data) => {
         if (
           data &&
-          typeof data === "object" &&
-          "status" in data &&
-          typeof data.status === "object" &&
+          typeof data === 'object' &&
+          'status' in data &&
+          typeof data.status === 'object' &&
           data.status !== null &&
-          "requestId" in data.status
+          'requestId' in data.status
         ) {
           return data;
         }
@@ -26,7 +31,7 @@ export class ResponseInterceptor<T> implements NestInterceptor<T, any> {
         return {
           status: {
             code: ApiResponseCode.Success,
-            message: "Success",
+            message: 'Success',
             requestId,
             requestTime,
           },
