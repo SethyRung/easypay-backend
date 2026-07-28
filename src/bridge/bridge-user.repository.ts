@@ -9,7 +9,7 @@ export class BridgeUserRepository {
 
   async findById(id: string) {
     const result = await this.db
-      .select({ id: user.id, email: user.email })
+      .select({ id: user.id, name: user.name, email: user.email })
       .from(user)
       .where(eq(user.id, id))
       .limit(1);

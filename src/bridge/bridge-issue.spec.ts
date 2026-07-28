@@ -32,10 +32,13 @@ describe('BridgeIssueService.issue', () => {
 
   beforeEach(() => {
     bridgeUserRepository = {
-      findById: jest
-        .fn()
-        .mockResolvedValue({ id: 'user-1', email: 'user-1@example.com' }),
+      findById: jest.fn(),
     } as unknown as jest.Mocked<BridgeUserRepository>;
+    bridgeUserRepository.findById.mockResolvedValue({
+      id: 'user-1',
+      name: 'User One',
+      email: 'user-1@example.com',
+    });
 
     httpService = { post: jest.fn() };
 
@@ -72,9 +75,53 @@ describe('BridgeIssueService.issue', () => {
     expect(url).toBe('https://glitch.example.com/api/bridge/issue');
     expect(body).toEqual({
       userId: 'user-1',
+      name: 'User One',
       email: 'user-1@example.com',
       hash: expect.stringMatching(/^[a-f0-9]{64}$/),
     });
+  });
+
+  it('name is present in the body forwarded to glitch', async () => {
+    httpService.post.mockReturnValue(
+      of(
+        makeResponse(200, {
+          status: { code: ApiResponseCode.Success },
+          data: { ticket: TICKET },
+        }),
+      ),
+    );
+
+    await service.issue('user-1');
+
+    const [, body] = httpService.post.mock.calls[0];
+    expect(body).toMatchObject({ name: 'User One' });
+  });
+
+  it('hash differs when name differs (proves name is in the digest)', async () => {
+    httpService.post.mockReturnValue(
+      of(
+        makeResponse(200, {
+          status: { code: ApiResponseCode.Success },
+          data: { ticket: TICKET },
+        }),
+      ),
+    );
+
+    await service.issue('user-1');
+    const hashWithOriginalName = httpService.post.mock.calls[0][1]
+      .hash as string;
+
+    bridgeUserRepository.findById.mockResolvedValueOnce({
+      id: 'user-1',
+      name: 'Different Name',
+      email: 'user-1@example.com',
+    });
+
+    await service.issue('user-1');
+    const hashWithDifferentName = httpService.post.mock.calls[1][1]
+      .hash as string;
+
+    expect(hashWithDifferentName).not.toEqual(hashWithOriginalName);
   });
 
   it('local user not found → throws NotFoundException without calling glitch', async () => {

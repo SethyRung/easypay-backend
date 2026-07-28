@@ -30,16 +30,21 @@ export class BridgeIssueService {
       throw new NotFoundException('User not found');
     }
 
-    const hash = this.computeHash(user.id, user.email);
-    const ticket = await this.forwardToGlitch(user.id, user.email, hash);
+    const hash = this.computeHash(user.id, user.name, user.email);
+    const ticket = await this.forwardToGlitch(
+      user.id,
+      user.name,
+      user.email,
+      hash,
+    );
     return { ticket };
   }
 
-  private computeHash(userId: string, email: string): string {
+  private computeHash(userId: string, name: string, email: string): string {
     const secret = this.configService.get<string>('BRIDGE_SHARED_SECRET');
 
     return createHash('sha256')
-      .update(userId + email + secret)
+      .update(userId + name + email + secret)
       .digest('hex');
   }
 
@@ -48,8 +53,13 @@ export class BridgeIssueService {
     return (url ?? '').replace(/\/$/, '');
   }
 
-  private async forwardToGlitch(userId: string, email: string, hash: string) {
-    const body = { userId, email, hash };
+  private async forwardToGlitch(
+    userId: string,
+    name: string,
+    email: string,
+    hash: string,
+  ) {
+    const body = { userId, name, email, hash };
 
     const response = await firstValueFrom(
       this.httpService
